@@ -3,9 +3,6 @@ name: Pin Requirements
 on:
   workflow_dispatch:
   workflow_call:
-  release:
-    types:
-      - released
 
 jobs:
   update-pinned-requirements:
