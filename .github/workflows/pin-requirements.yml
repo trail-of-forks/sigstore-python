@@ -6,6 +6,7 @@ on:
 
 permissions:
   pull-requests: write
+  contents: write
 
 jobs:
   update-pinned-requirements:
@@ -39,6 +40,7 @@ jobs:
           title: Update pinned requirements for v${{ env.sigstore_python_version }}
           body: Pins dependencies for [v${{ env.sigstore_python_version }}](https://github.com/sigstore/sigstore-python/releases/tag/v${{ env.sigstore_python_version }})
           commit-message: "install: update pinned requirements"
+          branch: "pin-requirements/sigstore/${{ env.sigstore_python_version }}"
           signoff: true
           delete-branch: true
       - if: ${{ steps.pr.outputs.pull-request-number }}
