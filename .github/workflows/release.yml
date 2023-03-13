@@ -150,4 +150,5 @@ jobs:
 
   pin-requirements:
     needs: [release-pypi]
+    if: !github.event.release.prerelease
     uses: ./.github/workflows/pin-requirements.yml
