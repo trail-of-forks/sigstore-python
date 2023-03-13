@@ -147,3 +147,7 @@ jobs:
           files: |
             built-packages/*
             smoketest-artifacts/*
+
+  pin-requirements:
+    needs: [release-pypi]
+    uses: ./.github/workflows/pin-requirements.yml

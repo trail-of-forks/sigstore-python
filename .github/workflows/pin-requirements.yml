@@ -1,0 +1,39 @@
+name: Pin Requirements
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  release:
+    types:
+      - released
+
+jobs:
+  update-pinned-requirements:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+
+      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435
+        with:
+          python-version: "3.x"
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
+
+      # install pip-compile
+      - run: pip install pip-tools
+
+      - run: |
+          cd install
+          version_name=$(echo "${{ github.ref_name }}" | sed "s/^v//")
+          echo "sigstore==$version_name" >requirements.in
+          pip-compile --allow-unsafe --generate-hashes --output-file=requirements.txt requirements.in
+      - id: pr
+        uses: peter-evans/create-pull-request@2b011faafdcbc9ceb11414d64d0573f37c774b04 # v4.2.3
+        with:
+          title: Update pinned requirements for ${{ github.ref_name }}
+          body: Pins dependencies for [${{ github.ref_name }}](https://github.com/sigstore/sigstore-python/releases/tag/${{ github.ref_name }})
+          signoff: true
+          delete-branch: true
+      - if: ${{ steps.pr.outputs.pull-request-number }}
+        run: |
+          echo "Created PR \#${{ steps.pr.outputs.pull-request-number }}"
