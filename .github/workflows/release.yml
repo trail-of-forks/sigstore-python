@@ -5,11 +5,10 @@ on:
     types:
       - published
 
-permissions: # added using https://github.com/step-security/secure-workflows
-  contents: read
-
 jobs:
   build:
+    permissions:
+      contents: read
     name: Build and sign artifacts
     runs-on: ubuntu-latest
     permissions:
@@ -97,6 +96,8 @@ jobs:
           if-no-files-found: warn
 
   generate-provenance:
+    permissions:
+      contents: read
     needs: [build]
     name: Generate build provenance
     permissions:
@@ -113,6 +114,8 @@ jobs:
       upload-assets: true
 
   release-pypi:
+    permissions:
+      contents: read
     needs: [build, generate-provenance]
     runs-on: ubuntu-latest
     permissions: {}
@@ -128,6 +131,8 @@ jobs:
           packages_dir: built-packages/
 
   release-github:
+    permissions:
+      contents: read
     needs: [build, generate-provenance]
     runs-on: ubuntu-latest
     permissions:
@@ -149,6 +154,9 @@ jobs:
             smoketest-artifacts/*
 
   pin-requirements:
+    permissions:
+      pull-requests: write
+      contents: write
     needs: [release-pypi]
     if: ${{ !github.event.release.prerelease }}
     uses: ./.github/workflows/pin-requirements.yml
