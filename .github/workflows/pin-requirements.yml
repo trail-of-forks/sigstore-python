@@ -38,7 +38,7 @@ jobs:
         uses: peter-evans/create-pull-request@2b011faafdcbc9ceb11414d64d0573f37c774b04 # v4.2.3
         with:
           title: Update pinned requirements for v${{ env.sigstore_python_version }}
-          body: Pins dependencies for [v${{ env.sigstore_python_version }}](https://github.com/sigstore/sigstore-python/releases/tag/v${{ env.sigstore_python_version }})
+          body: Pins dependencies for [v${{ env.sigstore_python_version }}](https://github.com/sigstore/sigstore-python/releases/tag/v${{ env.sigstore_python_version }}).
           commit-message: "install: update pinned requirements"
           branch: "pin-requirements/sigstore/${{ env.sigstore_python_version }}"
           signoff: true
