@@ -21,19 +21,23 @@ jobs:
           cache: "pip"
           cache-dependency-path: pyproject.toml
 
-      # install pip-compile
       - run: pip install pip-tools
 
-      - run: |
+      - name: Determine latest sigstore-python PyPI release
+        run: |
+          version=$(curl -H "Accept: application/vnd.pypi.simple.v1+json" https://pypi.org/simple/sigstore/ | jq -r '.versions[-1]')
+          echo "sigstore_python_version=$version" >>$GITHUB_ENV
+      - name: Update requirements
+        run: |
           cd install
-          version_name=$(curl -H "Accept: application/vnd.pypi.simple.v1+json" https://pypi.org/simple/sigstore/ | jq -r '.versions[-1]')
-          echo "sigstore==$version_name" >requirements.in
+          echo "sigstore==${{ env.sigstore_python_version }}" >requirements.in
           pip-compile --allow-unsafe --generate-hashes --output-file=requirements.txt requirements.in
-      - id: pr
+      - name: Open pull request
+        id: pr
         uses: peter-evans/create-pull-request@2b011faafdcbc9ceb11414d64d0573f37c774b04 # v4.2.3
         with:
-          title: Update pinned requirements for ${{ github.ref_name }}
-          body: Pins dependencies for [${{ github.ref_name }}](https://github.com/sigstore/sigstore-python/releases/tag/${{ github.ref_name }})
+          title: Update pinned requirements for v${{ env.sigstore_python_version }}
+          body: Pins dependencies for [v${{ env.sigstore_python_version }}](https://github.com/sigstore/sigstore-python/releases/tag/v${{ env.sigstore_python_version }})
           commit-message: "install: update pinned requirements"
           signoff: true
           delete-branch: true
