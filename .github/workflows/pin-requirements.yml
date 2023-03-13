@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   workflow_call:
 
+permissions:
+  pull-requests: write
+
 jobs:
   update-pinned-requirements:
     runs-on: ubuntu-latest
