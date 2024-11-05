@@ -40,6 +40,25 @@ jobs:
           cache: "pip"
           cache-dependency-path: pyproject.toml
 
+      - name: Install OpenSSL (Windows-only)
+        if: matrix.conf.os == 'windows-latest'
+        uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11 # v6
+        with:
+          repo: pyca/infra
+          workflow: build-windows-openssl.yml
+          branch: main
+          workflow_conclusion: success
+          name: "openssl-win64"
+          path: "C:/openssl-win64/"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure (Windows-only)
+        if: matrix.conf.os == 'windows-latest'
+        shell: bash
+        run: |
+          echo "OPENSSL_DIR=C:/openssl-win64" >> $GITHUB_ENV
+          echo "OPENSSL_NO_VENDOR=1" >> $GITHUB_ENV
+
       - name: deps
         run: make dev SIGSTORE_EXTRA=test
 
